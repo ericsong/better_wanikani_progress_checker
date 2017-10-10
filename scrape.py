@@ -51,6 +51,8 @@ for character in characters:
 
 output += "Overall: " + str(sum / getTotal(dashboard_html))
 
+print(output)
+
 f = open(generateFilename(), 'w')
 f.write(output)
 f.close()
