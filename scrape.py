@@ -3,8 +3,11 @@ from datetime import datetime
 from credentials import username, password
 import requests, lxml.html
 
-def getPercentageFromElement(a):
-    return int(lxml.html.fromstring(a.get('data-content')).xpath('//div//div/text()')[0].split('%')[0])
+def getPercentageFromElement(li):
+    if li.get('style') == 'display: none;':
+        return 100
+    
+    return int(lxml.html.fromstring(li.getchildren()[0].get('data-content')).xpath('//div//div/text()')[0].split('%')[0])
 
 def generateFilename():
     return "Level_" + str(getLevel()) + "_" + getTimeString() + ".txt"
@@ -35,15 +38,16 @@ submit.click()
 innerHTML = browser.execute_script("return document.body.innerHTML")
 
 dashboard_html = lxml.html.fromstring(innerHTML)
-characters = dashboard_html.xpath("//div[@class='lattice-single-character']//ul//li//a")
+lis = dashboard_html.xpath("//div[@class='lattice-single-character']//ul//li")
 
 sum = 0
 
 output = ""
 
-for character in characters:
+for li in lis:
+    character = li.getchildren()[0]
     kanji = character.text
-    percentage = getPercentageFromElement(character)
+    percentage = getPercentageFromElement(li)
 
     sum += percentage
 
